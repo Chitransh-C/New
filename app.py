@@ -38,6 +38,26 @@ def signup():
     conn.close()
     return jsonify({'status': 'success', 'message': 'Account created successfully'})
 
+@app.route('/debug/users')
+def debug_users():
+    try:
+        conn = sqlite3.connect('atm.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id, name, pin, balance FROM users")
+        rows = cursor.fetchall()
+        conn.close()
+        return jsonify({'status': 'success', 'users': rows})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+@app.route('/debug/tables')
+def debug_tables():
+    conn = sqlite3.connect('atm.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = cursor.fetchall()
+    conn.close()
+    return jsonify({'tables': tables})
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
